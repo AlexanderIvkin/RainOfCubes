@@ -1,18 +1,19 @@
+using System.Collections;
 using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
     [SerializeField] private GameObject _mainPlatform;
+    [SerializeField] private ObjectPooler _objectPooler;
     [SerializeField] private float _repeatRate = 1.0f;
     [SerializeField] private float _height;
-    [SerializeField] private ObjectPooler _objectPooler;
 
     private void Start()
     {
-        InvokeRepeating(nameof(GetCube), 1.0f, _repeatRate);
+        StartCoroutine(GetCube());
     }
 
-    private Vector3 ReturnPosition()
+    private Vector3 ReturnSpawnPosition()
     {
         float length = _mainPlatform.transform.localScale.x;
         float width = _mainPlatform.transform.localScale.z;
@@ -26,8 +27,17 @@ public class Spawner : MonoBehaviour
         return new Vector3(Random.Range(leftBoundX, rightBoundX), _mainPlatform.transform.position.y + _height, Random.Range(leftBoundZ, rightBoundZ));
     }
 
-    private void GetCube()
+    private IEnumerator GetCube()
     {
-        _objectPooler.Get(ReturnPosition());
+        bool isSpawn = true;
+        var wait = new WaitForSeconds(_repeatRate);
+
+        while (isSpawn)
+        {
+            yield return wait;
+
+            _objectPooler.Get(ReturnSpawnPosition());
+        }
+
     }
 }
