@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _objectPrefab: {fileID: 2131133528202406435, guid: dfb1ecb677660f446bbead43bc82afcb, type: 3}
-  _count: 10
+  _capacity: 10
 --- !u!4 &132836211
 Transform:
   m_ObjectHideFlags: 0
@@ -199,9 +199,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mainPlatform: {fileID: 949001543}
-  _repeatRate: 0.5
-  _height: 20
   _objectPooler: {fileID: 132836210}
+  _repeatRate: 1
+  _height: 20
 --- !u!4 &562609819
 Transform:
   m_ObjectHideFlags: 0

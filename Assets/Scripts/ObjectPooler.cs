@@ -6,7 +6,6 @@ public class ObjectPooler : MonoBehaviour
     [SerializeField] private Cube _objectPrefab;
     [SerializeField] private int _capacity;
 
-    private List<Cube> _subscribesCubes = new();
     private Queue<Cube> _objectsInPool = new();
 
     private void Awake()
@@ -16,23 +15,6 @@ public class ObjectPooler : MonoBehaviour
             Cube newCube = CreateObject();
             newCube.gameObject.SetActive(false);
             _objectsInPool.Enqueue(newCube);
-            _subscribesCubes.Add(newCube);
-        }
-    }
-
-    private void OnEnable()
-    {
-        foreach (var cube in _objectsInPool)
-        {
-            cube.Disabled += Release;
-        }
-    }
-
-    private void OnDisable()
-    {
-        foreach (var cube in _subscribesCubes)
-        {
-            cube.Disabled -= Release;
         }
     }
 
@@ -47,10 +29,9 @@ public class ObjectPooler : MonoBehaviour
         else
         {
             newCube = CreateObject();
-            newCube.Disabled += Release;
-            _subscribesCubes.Add(newCube);
         }
 
+        newCube.Disabled += Release;
         newCube.transform.position = positon;
         newCube.gameObject.SetActive(true);
     }
@@ -63,5 +44,6 @@ public class ObjectPooler : MonoBehaviour
     private void Release(Cube cube)
     {
         _objectsInPool.Enqueue(cube);
+        cube.Disabled -= Release;
     }
 }

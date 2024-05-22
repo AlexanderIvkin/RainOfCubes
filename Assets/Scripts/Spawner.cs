@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] private GameObject _mainPlatform;
+    [SerializeField] private Platform _mainPlatform;
     [SerializeField] private ObjectPooler _objectPooler;
     [SerializeField] private float _repeatRate = 1.0f;
     [SerializeField] private float _height;
