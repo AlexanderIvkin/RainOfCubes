@@ -24,7 +24,9 @@ public class Spawner : MonoBehaviour
         float leftBoundX = _mainPlatform.transform.position.x - length * halfFactor;
         float leftBoundZ = _mainPlatform.transform.position.z - width * halfFactor;
 
-        return new Vector3(Random.Range(leftBoundX, rightBoundX), _mainPlatform.transform.position.y + _height, Random.Range(leftBoundZ, rightBoundZ));
+        return new Vector3(Random.Range(leftBoundX, rightBoundX), 
+            _mainPlatform.transform.position.y + _height, 
+            Random.Range(leftBoundZ, rightBoundZ));
     }
 
     private IEnumerator GetCube()
@@ -38,6 +40,5 @@ public class Spawner : MonoBehaviour
 
             _objectPooler.Get(ReturnSpawnPosition());
         }
-
     }
 }

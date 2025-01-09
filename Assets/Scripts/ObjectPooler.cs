@@ -1,49 +1,49 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPooler : MonoBehaviour
+public class ObjectPooler<T> : MonoBehaviour where T: PoolableObject
 {
-    [SerializeField] private Cube _objectPrefab;
     [SerializeField] private int _capacity;
 
-    private Queue<Cube> _objectsInPool = new();
+    private Queue<T> _objectsInPool = new();
+    private T _poolableObject;
 
-    private void Awake()
+    public void Fill(T prefab)
     {
         for (int i = 0; i < _capacity; i++)
         {
-            Cube newCube = CreateObject();
-            newCube.gameObject.SetActive(false);
-            _objectsInPool.Enqueue(newCube);
+            T newObject = CreateObject(prefab);
+            newObject.gameObject.SetActive(false);
+            _objectsInPool.Enqueue(newObject);
         }
     }
 
     public void Get(Vector3 positon)
     {
-        Cube newCube;
+        T newPoolableObject;
 
         if (_objectsInPool.Count > 0)
         {
-            newCube = _objectsInPool.Dequeue();
+            newPoolableObject = _objectsInPool.Dequeue();
         }
         else
         {
-            newCube = CreateObject();
+            newPoolableObject = CreateObject(_poolableObject);
         }
 
-        newCube.Disabled += Release;
-        newCube.transform.position = positon;
-        newCube.gameObject.SetActive(true);
+        newPoolableObject.Disabled += Release;
+        newPoolableObject.transform.position = positon;
+        newPoolableObject.gameObject.SetActive(true);
     }
 
-    private Cube CreateObject()
+    private T CreateObject(T prefab) 
     {
-        return Instantiate(_objectPrefab);
+        return Instantiate(prefab);
     }
 
-    private void Release(Cube cube)
+    private void Release(T poolableObject)
     {
-        _objectsInPool.Enqueue(cube);
-        cube.Disabled -= Release;
+        _objectsInPool.Enqueue(poolableObject);
+        poolableObject.Disabled -= Release;
     }
 }

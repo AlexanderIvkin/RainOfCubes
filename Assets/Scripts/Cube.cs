@@ -3,21 +3,11 @@ using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-[RequireComponent(typeof(Renderer))]
-
-public class Cube : MonoBehaviour
+public class Cube : PoolableObject
 {
     private bool _isTouched;
-    private Material _material;
-    private Color _baseColor;
 
-    public event Action<Cube> Disabled;
-
-    private void Awake()
-    {
-        _material = GetComponent<Renderer>().material;
-        _baseColor = _material.color;
-    }
+    public override event Action<PoolableObject> Disabled;
 
     private void OnEnable()
     {
@@ -29,13 +19,13 @@ public class Cube : MonoBehaviour
         if (_isTouched == false && collision.gameObject.GetComponent<Platform>())
         {
             ChangeColor();
-            StartCoroutine(Disable(GetLifeTime()));
+            StartCoroutine(DelayedDisable(GetLifeTime()));
 
             _isTouched = true;
         }
     }
 
-    private IEnumerator Disable(float delay)
+    protected override IEnumerator DelayedDisable(float delay)
     {
         yield return new WaitForSeconds(delay);
 
@@ -43,22 +33,14 @@ public class Cube : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private float GetLifeTime()
-    {
-        float min = 2;
-        float max = 5;
-
-        return Random.Range(min, max);
-    }
-
     private void Init()
     {
         _isTouched = false;
-        _material.color = _baseColor;
+        Material.color = BaseColor;
     }
 
     private void ChangeColor()
     {
-        _material.color = new Color(Random.value, Random.value, Random.value);
+        Material.color = new Color(Random.value, Random.value, Random.value);
     }
 }
