@@ -1,20 +1,49 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-public abstract class Spawner<T> : MonoBehaviour where T: PoolableObject
+public class Spawner<T> : MonoBehaviour where T: PoolableObject
 {
-    [SerializeField] protected ObjectPooler<T> ObjectPooler;
+    [SerializeField] protected ObjectPool<T> ObjectPool;
 
+    public event Action CountChanged;
 
-    public int SpawnedObjectsCount { get; protected set; } = 0;
-    public int CreatedObjectsCount => ObjectPooler.CreatedObjectsCount;
+    public int SpawnedObjectsCount { get; private set; }
+    public int CreatedObjectsCount { get; private set; }
+    public int ActiveObjectsCount { get; private set; }
 
-
-
-    protected virtual void OnObjectDisabled(PoolableObject currentObject)
+    private void OnEnable()
     {
-        ObjectPooler.Release((T)currentObject);
-        currentObject.Disabled -= OnObjectDisabled;
+        ObjectPool.CreatedObjectCountChanged += OnCreatedObjectsCountChanged;
+    }
+
+    private void OnDisable()
+    {
+        ObjectPool.CreatedObjectCountChanged -= OnCreatedObjectsCountChanged;
+    }
+
+    public void Spawn(Vector3 position)
+    {
+        SpawnedObjectsCount++;
+        ActiveObjectsCount++;
+        CountChanged?.Invoke();
+
+        PoolableObject poolableObject = ObjectPool.Get(position);
+        poolableObject.Disabled += OnObjectDisable;
+    }
+
+    protected virtual void OnObjectDisable(PoolableObject poolableObject)
+    {
+        ActiveObjectsCount--;
+        CountChanged?.Invoke();
+
+        poolableObject.Disabled -= OnObjectDisable;
+        ObjectPool.Release((T)poolableObject);
+    }
+
+    private void OnCreatedObjectsCountChanged()
+    {
+        CreatedObjectsCount = ObjectPool.CreatedObjectsCount;
+
+        CountChanged?.Invoke();
     }
 }

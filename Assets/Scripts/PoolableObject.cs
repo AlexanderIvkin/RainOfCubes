@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -11,8 +10,6 @@ public abstract class PoolableObject : MonoBehaviour
 
     protected Material Material;
     protected Color BaseColor;
-
-    public string Name { get; protected set; }
 
     protected void Awake()
     {

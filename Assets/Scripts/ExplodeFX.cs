@@ -6,6 +6,6 @@ public class ExplodeFX : MonoBehaviour
     {
         float delay = 0.3f;
 
-        Destroy(this.gameObject, delay);
+        Destroy(gameObject, delay);
     }
 }

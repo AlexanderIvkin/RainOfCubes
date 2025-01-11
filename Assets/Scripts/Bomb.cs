@@ -1,9 +1,7 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Bomb : PoolableObject<Bomb>
+public class Bomb : PoolableObject
 {
     [SerializeField] private float _explotionRadius;
     [SerializeField] private float _explotionForce;
@@ -27,7 +25,7 @@ public class Bomb : PoolableObject<Bomb>
         }
 
         Explode();
-        Disable(this);
+        Disable();
         gameObject.SetActive(false);
     }
 
@@ -50,7 +48,6 @@ public class Bomb : PoolableObject<Bomb>
 
     protected override void Init()
     {
-        Name = "Бомба";
         Material.color = BaseColor;
         StartCoroutine(DelayedDisable(GetLifeTime()));
     }

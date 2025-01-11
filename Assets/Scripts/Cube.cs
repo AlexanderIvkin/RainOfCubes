@@ -1,9 +1,8 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Cube : PoolableObject<Cube>
+public class Cube : PoolableObject
 {
     private bool _isTouched;
 
@@ -22,7 +21,7 @@ public class Cube : PoolableObject<Cube>
     {
         yield return new WaitForSeconds(delay);
 
-        Disable(this);
+        Disable();
         gameObject.SetActive(false);
     }
 
@@ -33,7 +32,6 @@ public class Cube : PoolableObject<Cube>
 
     protected override void Init()
     {
-        Name = " Û·";
         _isTouched = false;
         Material.color = BaseColor;
     }
