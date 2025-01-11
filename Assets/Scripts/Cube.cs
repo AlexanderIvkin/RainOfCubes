@@ -3,16 +3,9 @@ using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Cube : PoolableObject
+public class Cube : PoolableObject<Cube>
 {
     private bool _isTouched;
-
-    public override event Action<PoolableObject> Disabled;
-
-    private void OnEnable()
-    {
-        Init();
-    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -29,18 +22,19 @@ public class Cube : PoolableObject
     {
         yield return new WaitForSeconds(delay);
 
-        Disabled?.Invoke(this);
+        Disable(this);
         gameObject.SetActive(false);
-    }
-
-    private void Init()
-    {
-        _isTouched = false;
-        Material.color = BaseColor;
     }
 
     private void ChangeColor()
     {
         Material.color = new Color(Random.value, Random.value, Random.value);
+    }
+
+    protected override void Init()
+    {
+        Name = " Û·";
+        _isTouched = false;
+        Material.color = BaseColor;
     }
 }

@@ -5,10 +5,18 @@ public class ObjectPooler<T> : MonoBehaviour where T: PoolableObject
 {
     [SerializeField] private int _capacity;
 
-    private Queue<T> _objectsInPool = new();
-    private T _poolableObject;
+    [SerializeField] private T _prefab;
 
-    public void Fill(T prefab)
+    private Queue<T> _objectsInPool = new();
+
+    public int CreatedObjectsCount => _objectsInPool.Count;
+
+    private void Awake()
+    {
+        Fill(_prefab);
+    }
+
+    private void Fill(T prefab)
     {
         for (int i = 0; i < _capacity; i++)
         {
@@ -18,7 +26,7 @@ public class ObjectPooler<T> : MonoBehaviour where T: PoolableObject
         }
     }
 
-    public void Get(Vector3 positon)
+    public T Get(Vector3 positon)
     {
         T newPoolableObject;
 
@@ -28,12 +36,13 @@ public class ObjectPooler<T> : MonoBehaviour where T: PoolableObject
         }
         else
         {
-            newPoolableObject = CreateObject(_poolableObject);
+            newPoolableObject = CreateObject(_prefab);
         }
 
-        newPoolableObject.Disabled += Release;
         newPoolableObject.transform.position = positon;
         newPoolableObject.gameObject.SetActive(true);
+
+        return newPoolableObject;
     }
 
     private T CreateObject(T prefab) 
@@ -41,9 +50,8 @@ public class ObjectPooler<T> : MonoBehaviour where T: PoolableObject
         return Instantiate(prefab);
     }
 
-    private void Release(T poolableObject)
+    public void Release(T poolableObject)
     {
         _objectsInPool.Enqueue(poolableObject);
-        poolableObject.Disabled -= Release;
     }
 }

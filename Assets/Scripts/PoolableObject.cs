@@ -7,15 +7,22 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(Renderer))]
 public abstract class PoolableObject : MonoBehaviour
 {
-    public abstract event Action<PoolableObject> Disabled;
+    public event Action<PoolableObject> Disabled;
 
     protected Material Material;
     protected Color BaseColor;
+
+    public string Name { get; protected set; }
 
     protected void Awake()
     {
         Material = GetComponent<Renderer>().material;
         BaseColor = Material.color;
+    }
+
+    protected void OnEnable()
+    {
+        Init();
     }
 
     protected float GetLifeTime()
@@ -26,5 +33,12 @@ public abstract class PoolableObject : MonoBehaviour
         return Random.Range(min, max);
     }
 
+    protected void Disable()
+    {
+        Disabled?.Invoke(this);
+    }
+
     protected abstract IEnumerator DelayedDisable(float delay);
+
+    protected abstract void Init();
 }

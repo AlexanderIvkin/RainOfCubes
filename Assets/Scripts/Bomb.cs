@@ -3,18 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bomb : PoolableObject
+public class Bomb : PoolableObject<Bomb>
 {
     [SerializeField] private float _explotionRadius;
     [SerializeField] private float _explotionForce;
-
-    public override event Action<PoolableObject> Disabled;
-
-    private void OnEnable()
-    {
-        Material.color = BaseColor;
-        StartCoroutine(DelayedDisable(GetLifeTime()));
-    }
+    [SerializeField] private ExplodeFX _explodeFX;
 
     protected override IEnumerator DelayedDisable(float delay)
     {
@@ -34,13 +27,14 @@ public class Bomb : PoolableObject
         }
 
         Explode();
-        Disabled?.Invoke(this);
+        Disable(this);
         gameObject.SetActive(false);
     }
 
     private void Explode()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, _explotionRadius);
+        Instantiate(_explodeFX, gameObject.transform.position, Quaternion.identity);
 
         if (hits.Length > 0)
         {
@@ -52,5 +46,12 @@ public class Bomb : PoolableObject
                 }
             }
         }
+    }
+
+    protected override void Init()
+    {
+        Name = "Бомба";
+        Material.color = BaseColor;
+        StartCoroutine(DelayedDisable(GetLifeTime()));
     }
 }
